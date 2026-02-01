@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hycode - 測試頁面</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+    }
+    
+    nav {
+      border-bottom: 1px solid #334155;
+      padding: 16px;
+      background-color: #0f172a;
+    }
+    
+    .nav-container {
+      max-width: 56rem;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    h1 {
+      font-size: 20px;
+      font-weight: bold;
+      color: #6366f1;
+    }
+    
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    
+    button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      background-color: transparent;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    
+    button.active {
+      background-color: #6366f1;
+      color: white;
+    }
+    
+    button:hover {
+      color: #f1f5f9;
+      background-color: #1e293b;
+    }
+    
+    main {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    
+    .content {
+      display: none;
+    }
+    
+    .content.active {
+      display: block;
+    }
+    
+    h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      background: linear-gradient(to right, #4f46e5, #9333ea, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    p {
+      color: #94a3b8;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .feature-list {
+      text-align: left;
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    
+    .feature-list li {
+      margin: 10px 0;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <h1>Hycode</h1>
+      <div class="nav-buttons">
+        <button class="active" onclick="switchPage('todo')">Todo</button>
+        <button onclick="switchPage('pomodoro')">Pomodoro</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div id="todo" class="content active">
+      <h2>待辦事項</h2>
+      <p>管理你的任務，提升效率</p>
+      <div class="feature-list">
+        <ul>
+          <li>✓ 新增/編輯/刪除待辦事項</li>
+          <li>✓ 標記完成/未完成</li>
+          <li>✓ 篩選功能（全部/進行中/已完成）</li>
+          <li>✓ LocalStorage 自動儲存</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="pomodoro" class="content">
+      <h2>番茄時鐘</h2>
+      <p>專注工作，高效生活</p>
+      <div class="feature-list">
+        <ul>
+          <li>✓ 25分工作/5分短休/15分長休</li>
+          <li>✓ 圓形進度條視覺化</li>
+          <li>✓ 完成時音頻通知</li>
+          <li>✓ 統計面板</li>
+          <li>✓ 自動模式切換</li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switchPage(page) {
+      // 隱藏所有內容
+      document.querySelectorAll('.content').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      // 移除所有按鈕的 active class
+      document.querySelectorAll('button').forEach(el => {
+        el.classList.remove('active');
+      });
+      
+      // 顯示選中的內容
+      document.getElementById(page).classList.add('active');
+      
+      // 標記選中的按鈕
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

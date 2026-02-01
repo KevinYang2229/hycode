@@ -8,7 +8,7 @@ function MainApp() {
   const [currentPage, setCurrentPage] = useState<PageType>('todo');
 
   return (
-    <div>
+    <div className="min-h-screen bg-[var(--color-bg)]">
       {/* Navigation Bar */}
       <nav className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
