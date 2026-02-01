@@ -68,82 +68,114 @@ export default function App() {
     setTimeLeft(DURATIONS[mode]);
   };
 
+  const getBadgeStyle = () => {
+    switch (mode) {
+      case 'work':
+        return 'bg-blue-500/20 text-blue-300';
+      case 'break':
+        return 'bg-emerald-500/20 text-emerald-300';
+      case 'longBreak':
+        return 'bg-amber-500/20 text-amber-300';
+    }
+  };
+
+  const getButtonStyle = () => {
+    switch (mode) {
+      case 'work':
+        return 'from-blue-500 to-blue-600 hover:shadow-lg hover:shadow-blue-500/50';
+      case 'break':
+        return 'from-emerald-500 to-emerald-600 hover:shadow-lg hover:shadow-emerald-500/50';
+      case 'longBreak':
+        return 'from-amber-500 to-amber-600 hover:shadow-lg hover:shadow-amber-500/50';
+    }
+  };
+
   return (
-    <div className="container">
-      {/* Header */}
-      <div className="header">
-        <h1 className="title">Pomodoro</h1>
-        <p className="subtitle">專注每一刻</p>
-      </div>
-
-      {/* Main Card */}
-      <div className="card">
-        {/* Badge */}
-        <div className={`badge ${mode}`}>
-          {mode === 'work' && '工作時間'}
-          {mode === 'break' && '短休息'}
-          {mode === 'longBreak' && '長休息'}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+            Pomodoro
+          </h1>
+          <p className="text-slate-400 text-lg">專注每一刻</p>
         </div>
 
-        {/* Timer Display */}
-        <div className="timer-display">
-          <div className="timer-time">
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+        {/* Main Card */}
+        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-12 space-y-8 shadow-2xl">
+          {/* Badge */}
+          <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${getBadgeStyle()}`}>
+            {mode === 'work' && '工作時間'}
+            {mode === 'break' && '短休息'}
+            {mode === 'longBreak' && '長休息'}
           </div>
-          <p className="timer-status">
-            {isRunning ? '進行中...' : '已暫停'}
-          </p>
-        </div>
 
-        {/* Control Buttons */}
-        <div className="button-group">
-          <button
-            onClick={() => setIsRunning(!isRunning)}
-            className="button primary"
-          >
-            {isRunning ? '暫停' : '開始'}
-          </button>
-          <button
-            onClick={handleReset}
-            className="button secondary"
-          >
-            重置
-          </button>
-        </div>
-
-        {/* Mode Switcher */}
-        <div className="mode-buttons">
-          {(['work', 'break', 'longBreak'] as const).map(m => (
-            <button
-              key={m}
-              onClick={() => handleModeSwitch(m)}
-              disabled={isRunning}
-              className={`mode-button ${mode === m ? 'active' : ''}`}
-            >
-              {m === 'work' && '工作'}
-              {m === 'break' && '短休'}
-              {m === 'longBreak' && '長休'}
-            </button>
-          ))}
-        </div>
-
-        {/* Stats */}
-        <div className="stats">
-          <div className="stat-item">
-            <p className="stat-label">已完成</p>
-            <p className="stat-value primary">{sessionsCompleted}</p>
-          </div>
-          <div className="stat-item">
-            <p className="stat-label">總專注時間</p>
-            <p className="stat-value success">
-              {Math.floor(totalFocusTime / 60)}h {totalFocusTime % 60}m
+          {/* Timer Display */}
+          <div className="text-center space-y-4">
+            <div className="text-9xl font-bold font-mono text-blue-400 tracking-tighter">
+              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+            </div>
+            <p className="text-slate-400 text-lg">
+              {isRunning ? '進行中...' : '已暫停'}
             </p>
           </div>
-        </div>
-      </div>
 
-      {/* Footer */}
-      <p className="footer">4 個工作週期後自動切換長休息</p>
+          {/* Control Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              onClick={() => setIsRunning(!isRunning)}
+              className={`flex-1 bg-gradient-to-r ${getButtonStyle()} text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 active:scale-95`}
+            >
+              {isRunning ? '暫停' : '開始'}
+            </button>
+            <button
+              onClick={handleReset}
+              className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 active:scale-95 border border-slate-600"
+            >
+              重置
+            </button>
+          </div>
+
+          {/* Mode Switcher */}
+          <div className="flex gap-2">
+            {(['work', 'break', 'longBreak'] as const).map(m => (
+              <button
+                key={m}
+                onClick={() => handleModeSwitch(m)}
+                disabled={isRunning}
+                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  mode === m
+                    ? 'bg-slate-600 text-white border border-slate-500'
+                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-100 border border-slate-600 disabled:opacity-50'
+                }`}
+              >
+                {m === 'work' && '工作 (25m)'}
+                {m === 'break' && '短休 (5m)'}
+                {m === 'longBreak' && '長休 (15m)'}
+              </button>
+            ))}
+          </div>
+
+          {/* Stats */}
+          <div className="border-t border-slate-700 pt-8 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-slate-400 text-sm mb-2 uppercase tracking-widest">已完成</p>
+              <p className="text-4xl font-bold text-blue-400">{sessionsCompleted}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 text-sm mb-2 uppercase tracking-widest">總專注時間</p>
+              <p className="text-4xl font-bold text-emerald-400">
+                {Math.floor(totalFocusTime / 60)}h {totalFocusTime % 60}m
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-slate-500 text-xs mt-8">
+          4 個工作週期後自動切換長休息
+        </p>
+      </div>
     </div>
   );
 }
