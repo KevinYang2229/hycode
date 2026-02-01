@@ -3,7 +3,7 @@ import './index.css';
 
 type SessionType = 'work' | 'break' | 'longBreak';
 
-const DURATIONS: Record<SessionType, number> = {
+const DEFAULT_DURATIONS: Record<SessionType, number> = {
   work: 25 * 60,
   break: 5 * 60,
   longBreak: 15 * 60,
@@ -11,18 +11,28 @@ const DURATIONS: Record<SessionType, number> = {
 
 export default function App() {
   const [mode, setMode] = useState<SessionType>('work');
-  const [timeLeft, setTimeLeft] = useState(DURATIONS.work);
+  const [timeLeft, setTimeLeft] = useState(DEFAULT_DURATIONS.work);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
+  const [showSettings, setShowSettings] = useState(false);
+  const [durations, setDurations] = useState<Record<SessionType, number>>(DEFAULT_DURATIONS);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // 初始化數據
   useEffect(() => {
     const saved = localStorage.getItem('pomodoro_stats');
     if (saved) {
-      setSessionsCompleted(JSON.parse(saved).sessionsCompleted || 0);
+      const data = JSON.parse(saved);
+      setSessionsCompleted(data.sessionsCompleted || 0);
+    }
+
+    const savedDurations = localStorage.getItem('pomodoro_durations');
+    if (savedDurations) {
+      setDurations(JSON.parse(savedDurations));
     }
   }, []);
 
+  // 計時器邏輯
   useEffect(() => {
     if (!isRunning) return;
 
@@ -38,10 +48,10 @@ export default function App() {
           if (mode === 'work') {
             const nextMode = sessionsCompleted % 4 === 3 ? 'longBreak' : 'break';
             setMode(nextMode);
-            return DURATIONS[nextMode];
+            return durations[nextMode];
           } else {
             setMode('work');
-            return DURATIONS.work;
+            return durations.work;
           }
         }
         return prev - 1;
@@ -51,21 +61,30 @@ export default function App() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isRunning, mode, sessionsCompleted]);
+  }, [isRunning, mode, sessionsCompleted, durations]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const totalFocusTime = sessionsCompleted * 25;
+  const totalFocusTime = sessionsCompleted * Math.floor(durations.work / 60);
 
   const handleModeSwitch = (newMode: SessionType) => {
     if (isRunning) return;
     setMode(newMode);
-    setTimeLeft(DURATIONS[newMode]);
+    setTimeLeft(durations[newMode]);
   };
 
   const handleReset = () => {
     setIsRunning(false);
-    setTimeLeft(DURATIONS[mode]);
+    setTimeLeft(durations[mode]);
+  };
+
+  const handleDurationChange = (type: SessionType, value: number) => {
+    const newDurations = { ...durations, [type]: value * 60 };
+    setDurations(newDurations);
+    localStorage.setItem('pomodoro_durations', JSON.stringify(newDurations));
+    if (mode === type && !isRunning) {
+      setTimeLeft(value * 60);
+    }
   };
 
   const getBadgeStyle = () => {
@@ -94,77 +113,125 @@ export default function App() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+        <div className="text-center mb-8 sm:mb-16">
+          <h1 className="text-4xl sm:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
             Pomodoro
           </h1>
-          <p className="text-slate-400 text-lg">專注每一刻</p>
+          <p className="text-slate-400 text-sm sm:text-lg">專注每一刻</p>
         </div>
 
         {/* Main Card */}
-        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-12 space-y-8 shadow-2xl">
+        <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl sm:rounded-3xl p-6 sm:p-12 space-y-6 sm:space-y-8 shadow-2xl">
           {/* Badge */}
-          <div className={`inline-block px-4 py-2 rounded-full text-sm font-semibold ${getBadgeStyle()}`}>
+          <div className={`inline-block px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold ${getBadgeStyle()}`}>
             {mode === 'work' && '工作時間'}
             {mode === 'break' && '短休息'}
             {mode === 'longBreak' && '長休息'}
           </div>
 
-          {/* Timer Display */}
-          <div className="text-center space-y-4">
-            <div className="text-9xl font-bold font-mono text-blue-400 tracking-tighter">
-              {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+          {/* Timer Display - 修復手機版破版 */}
+          <div className="text-center space-y-2 sm:space-y-4">
+            <div className="flex items-baseline justify-center gap-1 sm:gap-2">
+              <div className="text-6xl sm:text-9xl font-bold font-mono text-blue-400 leading-none">
+                {String(minutes).padStart(2, '0')}
+              </div>
+              <div className="text-3xl sm:text-6xl font-bold font-mono text-slate-400 leading-none">:</div>
+              <div className="text-6xl sm:text-9xl font-bold font-mono text-blue-400 leading-none">
+                {String(seconds).padStart(2, '0')}
+              </div>
             </div>
-            <p className="text-slate-400 text-lg">
+            <p className="text-slate-400 text-xs sm:text-lg">
               {isRunning ? '進行中...' : '已暫停'}
             </p>
           </div>
 
           {/* Control Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-2 sm:gap-3 pt-2 sm:pt-4">
             <button
               onClick={() => setIsRunning(!isRunning)}
-              className={`flex-1 bg-gradient-to-r ${getButtonStyle()} text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 active:scale-95`}
+              className={`flex-1 bg-gradient-to-r ${getButtonStyle()} text-white font-semibold py-2 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-200 active:scale-95 text-sm sm:text-base`}
             >
               {isRunning ? '暫停' : '開始'}
             </button>
             <button
               onClick={handleReset}
-              className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 active:scale-95 border border-slate-600"
+              className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 sm:py-4 px-4 sm:px-6 rounded-lg transition-all duration-200 active:scale-95 border border-slate-600 text-sm sm:text-base"
             >
               重置
+            </button>
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 sm:py-4 px-3 sm:px-4 rounded-lg transition-all duration-200 active:scale-95 border border-slate-600 text-sm sm:text-base"
+              title="設定"
+            >
+              ⚙️
             </button>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 text-xs sm:text-sm">
             {(['work', 'break', 'longBreak'] as const).map(m => (
               <button
                 key={m}
                 onClick={() => handleModeSwitch(m)}
                 disabled={isRunning}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                className={`flex-1 py-2 sm:py-3 px-2 sm:px-4 rounded-lg font-medium transition-all duration-200 ${
                   mode === m
                     ? 'bg-slate-600 text-white border border-slate-500'
                     : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-100 border border-slate-600 disabled:opacity-50'
                 }`}
               >
-                {m === 'work' && '工作 (25m)'}
-                {m === 'break' && '短休 (5m)'}
-                {m === 'longBreak' && '長休 (15m)'}
+                {m === 'work' && '工作'}
+                {m === 'break' && '短休'}
+                {m === 'longBreak' && '長休'}
               </button>
             ))}
           </div>
 
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="border-t border-slate-700 pt-6 space-y-4">
+              <h3 className="text-sm sm:text-base font-semibold text-slate-300">時間設定（分鐘）</h3>
+              <div className="space-y-3">
+                {(['work', 'break', 'longBreak'] as const).map(m => (
+                  <div key={m} className="flex items-center justify-between">
+                    <label className="text-xs sm:text-sm text-slate-400">
+                      {m === 'work' && '工作時間'}
+                      {m === 'break' && '短休息'}
+                      {m === 'longBreak' && '長休息'}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleDurationChange(m, Math.max(1, durations[m] / 60 - 1))}
+                        className="bg-slate-700 hover:bg-slate-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 sm:w-10 text-center text-sm sm:text-base font-semibold">
+                        {durations[m] / 60}
+                      </span>
+                      <button
+                        onClick={() => handleDurationChange(m, durations[m] / 60 + 1)}
+                        className="bg-slate-700 hover:bg-slate-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Stats */}
-          <div className="border-t border-slate-700 pt-8 grid grid-cols-2 gap-4">
+          <div className="border-t border-slate-700 pt-4 sm:pt-8 grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <p className="text-slate-400 text-sm mb-2 uppercase tracking-widest">已完成</p>
-              <p className="text-4xl font-bold text-blue-400">{sessionsCompleted}</p>
+              <p className="text-xs sm:text-sm mb-1 sm:mb-2 uppercase tracking-widest text-slate-400">已完成</p>
+              <p className="text-2xl sm:text-4xl font-bold text-blue-400">{sessionsCompleted}</p>
             </div>
             <div>
-              <p className="text-slate-400 text-sm mb-2 uppercase tracking-widest">總專注時間</p>
-              <p className="text-4xl font-bold text-emerald-400">
+              <p className="text-xs sm:text-sm mb-1 sm:mb-2 uppercase tracking-widest text-slate-400">總專注時間</p>
+              <p className="text-2xl sm:text-4xl font-bold text-emerald-400">
                 {Math.floor(totalFocusTime / 60)}h {totalFocusTime % 60}m
               </p>
             </div>
@@ -172,7 +239,7 @@ export default function App() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-slate-500 text-xs mt-8">
+        <p className="text-center text-slate-500 text-xs mt-6 sm:mt-8">
           4 個工作週期後自動切換長休息
         </p>
       </div>
