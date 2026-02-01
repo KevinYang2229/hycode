@@ -142,7 +142,7 @@ export default function App() {
 
           {/* Timer Display - 修復手機版破版 + 警示效果 */}
           <div className="text-center space-y-2 sm:space-y-4">
-            <div className="flex items-baseline justify-center gap-1 sm:gap-2">
+            <div className="flex items-baseline justify-center gap-1 sm:gap-2 min-h-24 sm:min-h-40">
               <div className={`text-6xl sm:text-9xl font-bold font-mono leading-none transition-colors duration-300 ${getTimerStyle()}`}>
                 {String(minutes).padStart(2, '0')}
               </div>
@@ -151,7 +151,7 @@ export default function App() {
                 {String(seconds).padStart(2, '0')}
               </div>
             </div>
-            <p className={`text-xs sm:text-lg transition-colors duration-300 ${isWarning ? 'text-red-400 font-semibold' : 'text-slate-400'}`}>
+            <p className={`text-xs sm:text-lg h-6 transition-colors duration-300 ${isWarning ? 'text-red-400 font-semibold' : 'text-slate-400'}`}>
               {isWarning ? '⚠️ 即將結束！' : isRunning ? '進行中...' : '已暫停'}
             </p>
           </div>
