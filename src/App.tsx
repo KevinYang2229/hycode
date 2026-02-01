@@ -66,6 +66,10 @@ export default function App() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const totalFocusTime = sessionsCompleted * Math.floor(durations.work / 60);
+  
+  // 計算是否在最後1/3時間
+  const totalTime = durations[mode];
+  const isWarning = timeLeft <= totalTime / 3 && timeLeft > 0;
 
   const handleModeSwitch = (newMode: SessionType) => {
     if (isRunning) return;
@@ -109,6 +113,13 @@ export default function App() {
     }
   };
 
+  const getTimerStyle = () => {
+    if (isWarning) {
+      return 'text-red-500 animate-pulse';
+    }
+    return 'text-blue-400';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
@@ -129,19 +140,19 @@ export default function App() {
             {mode === 'longBreak' && '長休息'}
           </div>
 
-          {/* Timer Display - 修復手機版破版 */}
+          {/* Timer Display - 修復手機版破版 + 警示效果 */}
           <div className="text-center space-y-2 sm:space-y-4">
             <div className="flex items-baseline justify-center gap-1 sm:gap-2">
-              <div className="text-6xl sm:text-9xl font-bold font-mono text-blue-400 leading-none">
+              <div className={`text-6xl sm:text-9xl font-bold font-mono leading-none transition-colors duration-300 ${getTimerStyle()}`}>
                 {String(minutes).padStart(2, '0')}
               </div>
-              <div className="text-3xl sm:text-6xl font-bold font-mono text-slate-400 leading-none">:</div>
-              <div className="text-6xl sm:text-9xl font-bold font-mono text-blue-400 leading-none">
+              <div className={`text-3xl sm:text-6xl font-bold font-mono leading-none transition-colors duration-300 ${isWarning ? 'text-red-400' : 'text-slate-400'}`}>:</div>
+              <div className={`text-6xl sm:text-9xl font-bold font-mono leading-none transition-colors duration-300 ${getTimerStyle()}`}>
                 {String(seconds).padStart(2, '0')}
               </div>
             </div>
-            <p className="text-slate-400 text-xs sm:text-lg">
-              {isRunning ? '進行中...' : '已暫停'}
+            <p className={`text-xs sm:text-lg transition-colors duration-300 ${isWarning ? 'text-red-400 font-semibold' : 'text-slate-400'}`}>
+              {isWarning ? '⚠️ 即將結束！' : isRunning ? '進行中...' : '已暫停'}
             </p>
           </div>
 
@@ -188,31 +199,31 @@ export default function App() {
             ))}
           </div>
 
-          {/* Settings Panel */}
+          {/* Settings Panel - 更亮的顏色 */}
           {showSettings && (
-            <div className="border-t border-slate-700 pt-6 space-y-4">
-              <h3 className="text-sm sm:text-base font-semibold text-slate-300">時間設定（分鐘）</h3>
-              <div className="space-y-3">
+            <div className="border-t border-slate-600 pt-6 space-y-4 bg-slate-700/50 rounded-lg p-4">
+              <h3 className="text-sm sm:text-base font-semibold text-slate-200">時間設定（分鐘）</h3>
+              <div className="space-y-4">
                 {(['work', 'break', 'longBreak'] as const).map(m => (
                   <div key={m} className="flex items-center justify-between">
-                    <label className="text-xs sm:text-sm text-slate-400">
+                    <label className="text-sm sm:text-base text-slate-100 font-medium">
                       {m === 'work' && '工作時間'}
                       {m === 'break' && '短休息'}
                       {m === 'longBreak' && '長休息'}
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleDurationChange(m, Math.max(1, durations[m] / 60 - 1))}
-                        className="bg-slate-700 hover:bg-slate-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm"
+                        className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-2 rounded font-semibold text-sm sm:text-base transition-colors"
                       >
                         −
                       </button>
-                      <span className="w-8 sm:w-10 text-center text-sm sm:text-base font-semibold">
+                      <span className="w-10 sm:w-12 text-center text-base sm:text-lg font-bold text-slate-100">
                         {durations[m] / 60}
                       </span>
                       <button
                         onClick={() => handleDurationChange(m, durations[m] / 60 + 1)}
-                        className="bg-slate-700 hover:bg-slate-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm"
+                        className="bg-blue-600 hover:bg-blue-500 text-white px-3 sm:px-4 py-2 rounded font-semibold text-sm sm:text-base transition-colors"
                       >
                         +
                       </button>
