@@ -18,16 +18,21 @@ export function TodoList({ todos, filter, onToggle, onDelete, onEdit }: TodoList
 
   if (filteredTodos.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-[var(--color-text-muted)]">
-        <svg className="w-16 h-16 mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-        <p className="text-lg">
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '64px 16px',
+        color: '#94a3b8'
+      }}>
+        <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }}>📋</div>
+        <p style={{ fontSize: '18px', margin: 0 }}>
           {filter === 'all' && '尚無待辦事項'}
           {filter === 'active' && '沒有進行中的項目'}
           {filter === 'completed' && '沒有已完成的項目'}
         </p>
-        <p className="text-sm mt-1 opacity-70">
+        <p style={{ fontSize: '14px', marginTop: '8px', opacity: 0.7, margin: '8px 0 0 0' }}>
           {filter === 'all' && '新增一個來開始吧'}
         </p>
       </div>
@@ -35,7 +40,7 @@ export function TodoList({ todos, filter, onToggle, onDelete, onEdit }: TodoList
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {filteredTodos.map(todo => (
         <TodoItem
           key={todo.id}

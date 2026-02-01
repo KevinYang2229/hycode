@@ -41,48 +41,85 @@ export function PomodoroApp() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
-  const modeLabel: Record<SessionType, string> = {
-    work: '工作時間',
-    break: '短休息',
-    longBreak: '長休息'
-  };
-
   const modeColor: Record<SessionType, string> = {
     work: '#ef4444',
     break: '#22c55e',
     longBreak: '#3b82f6'
   };
 
+  const modeLabel: Record<SessionType, string> = {
+    work: '工作時間',
+    break: '短休息',
+    longBreak: '長休息'
+  };
+
   return (
-    <div className="min-h-screen py-8 px-4 sm:py-12">
-      <div className="max-w-2xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-2">
+    <div style={{ minHeight: '100vh', padding: '32px 16px' }}>
+      <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
+        <header style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{ 
+            fontSize: '36px',
+            fontWeight: 'bold',
+            background: 'linear-gradient(90deg, #f87171, #fb923c, #fbbf24)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '8px',
+            margin: '0 0 8px 0'
+          }}>
             番茄時鐘
           </h1>
-          <p className="text-[var(--color-text-muted)]">Pomodoro Timer</p>
+          <p style={{ color: '#94a3b8', margin: 0 }}>Pomodoro Timer</p>
         </header>
 
-        <main className="space-y-8">
-          <div className="flex flex-col items-center justify-center py-8">
-            <div className="text-lg font-semibold mb-4 px-4 py-2 rounded-full text-white" style={{ backgroundColor: modeColor[mode] }}>
+        <main style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Timer Display */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '32px', paddingBottom: '32px' }}>
+            <div style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '16px',
+              padding: '8px 16px',
+              borderRadius: '20px',
+              color: 'white',
+              backgroundColor: modeColor[mode],
+              display: 'inline-block'
+            }}>
               {modeLabel[mode]}
             </div>
 
-            <div className="text-6xl font-bold text-[var(--color-primary)] mb-8 font-mono">
+            <div style={{
+              fontSize: '72px',
+              fontWeight: 'bold',
+              color: '#6366f1',
+              marginBottom: '32px',
+              fontFamily: 'monospace',
+              letterSpacing: '4px'
+            }}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
 
-            <p className="text-[var(--color-text-muted)] text-sm">
+            <p style={{ color: '#94a3b8', fontSize: '14px', margin: 0 }}>
               {isRunning ? '進行中...' : '已暫停'}
             </p>
           </div>
 
-          <div className="space-y-6">
-            <div className="flex gap-3 justify-center">
+          {/* Controls */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 onClick={() => setIsRunning(!isRunning)}
-                className="px-8 py-3 rounded-xl bg-[var(--color-primary)] text-white font-semibold hover:bg-[var(--color-primary-hover)] transition-all duration-200 active:scale-95"
+                style={{
+                  padding: '12px 32px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: '#6366f1',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  ':active': { transform: 'scale(0.95)' }
+                }}
               >
                 {isRunning ? '暫停' : '開始'}
               </button>
@@ -91,13 +128,23 @@ export function PomodoroApp() {
                   setTimeLeft(DURATIONS[mode]);
                   setIsRunning(false);
                 }}
-                className="px-8 py-3 rounded-xl bg-[var(--color-surface-hover)] text-[var(--color-text)] font-semibold hover:bg-[var(--color-border)] transition-all duration-200 active:scale-95"
+                style={{
+                  padding: '12px 32px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  backgroundColor: '#334155',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  transition: 'all 0.2s'
+                }}
               >
                 重置
               </button>
             </div>
 
-            <div className="flex gap-2 justify-center">
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
               {(['work', 'break', 'longBreak'] as const).map(type => (
                 <button
                   key={type}
@@ -107,11 +154,18 @@ export function PomodoroApp() {
                     setIsRunning(false);
                   }}
                   disabled={isRunning}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    mode === type
-                      ? 'bg-[var(--color-primary)] text-white'
-                      : 'bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] disabled:opacity-50'
-                  }`}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: mode === type ? '#6366f1' : '#1e293b',
+                    color: mode === type ? 'white' : '#94a3b8',
+                    cursor: isRunning ? 'not-allowed' : 'pointer',
+                    fontWeight: '500',
+                    transition: 'all 0.2s',
+                    opacity: isRunning && mode !== type ? 0.5 : 1,
+                    fontSize: '14px'
+                  }}
                 >
                   {type === 'work' && '工作'}
                   {type === 'break' && '短休'}
@@ -121,25 +175,38 @@ export function PomodoroApp() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 p-6 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-[var(--color-primary)] mb-2">{sessionsCompleted}</div>
-              <p className="text-sm text-[var(--color-text-muted)]">已完成</p>
+          {/* Stats */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: '16px',
+            padding: '24px',
+            borderRadius: '12px',
+            backgroundColor: '#1e293b',
+            border: '1px solid #334155'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#6366f1', marginBottom: '8px' }}>
+                {sessionsCompleted}
+              </div>
+              <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>已完成</p>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-[var(--color-success)] mb-2">
+
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#22c55e', marginBottom: '8px' }}>
                 {Math.floor(sessionsCompleted * 25 / 60)}h {(sessionsCompleted * 25) % 60}m
               </div>
-              <p className="text-sm text-[var(--color-text-muted)]">專注時間</p>
+              <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>專注時間</p>
             </div>
-            <div className="text-center">
-              <div className="text-lg font-semibold text-[var(--color-text)] mb-2">-</div>
-              <p className="text-sm text-[var(--color-text-muted)]">最後一次</p>
+
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '8px' }}>-</div>
+              <p style={{ fontSize: '14px', color: '#94a3b8', margin: 0 }}>最後一次</p>
             </div>
           </div>
         </main>
 
-        <footer className="mt-12 text-center text-sm text-[var(--color-text-muted)] opacity-50">
+        <footer style={{ marginTop: '48px', textAlign: 'center', fontSize: '14px', color: '#94a3b8', opacity: 0.5 }}>
           <p>每 4 個工作週期後自動切換長休息</p>
         </footer>
       </div>

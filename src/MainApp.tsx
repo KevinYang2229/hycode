@@ -8,31 +8,64 @@ function MainApp() {
   const [currentPage, setCurrentPage] = useState<PageType>('todo');
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div style={{ minHeight: '100vh', backgroundColor: '#0f172a', color: '#f1f5f9' }}>
       {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-bg)]/95 backdrop-blur">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-[var(--color-primary)]">
+      <nav style={{ 
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        borderBottom: '1px solid #334155',
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        backdropFilter: 'blur(4px)',
+        padding: '16px'
+      }}>
+        <div style={{ 
+          maxWidth: '64rem',
+          margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingLeft: '16px',
+          paddingRight: '16px'
+        }}>
+          <h1 style={{ 
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#6366f1',
+            margin: 0
+          }}>
             Hycode
           </h1>
-          <div className="flex gap-2">
+          <div style={{ display: 'flex', gap: '8px' }}>
             <button
               onClick={() => setCurrentPage('todo')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                currentPage === 'todo'
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: currentPage === 'todo' ? '#6366f1' : 'transparent',
+                color: currentPage === 'todo' ? 'white' : '#94a3b8',
+                cursor: 'pointer',
+                fontWeight: '500',
+                transition: 'all 0.2s',
+                fontSize: '14px'
+              }}
             >
               Todo
             </button>
             <button
               onClick={() => setCurrentPage('pomodoro')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                currentPage === 'pomodoro'
-                  ? 'bg-[var(--color-primary)] text-white'
-                  : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]'
-              }`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: currentPage === 'pomodoro' ? '#6366f1' : 'transparent',
+                color: currentPage === 'pomodoro' ? 'white' : '#94a3b8',
+                cursor: 'pointer',
+                fontWeight: '500',
+                transition: 'all 0.2s',
+                fontSize: '14px'
+              }}
             >
               Pomodoro
             </button>

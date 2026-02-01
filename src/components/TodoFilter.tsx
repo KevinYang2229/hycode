@@ -24,20 +24,33 @@ export function TodoFilter({
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)]">
-      <div className="flex items-center gap-2">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '16px',
+      padding: '16px',
+      borderRadius: '12px',
+      backgroundColor: '#1e293b',
+      border: '1px solid #334155'
+    }}>
+      <div style={{ display: 'flex', gap: '8px' }}>
         {filters.map(({ key, label, count }) => (
           <button
             key={key}
             onClick={() => onFilterChange(key)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              filter === key
-                ? 'bg-[var(--color-primary)] text-white'
-                : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]'
-            }`}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              backgroundColor: filter === key ? '#6366f1' : 'transparent',
+              color: filter === key ? 'white' : '#94a3b8',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              transition: 'all 0.2s'
+            }}
           >
-            {label}
-            <span className="ml-1.5 text-xs opacity-70">({count})</span>
+            {label} <span style={{ opacity: 0.7 }}>({count})</span>
           </button>
         ))}
       </div>
@@ -45,7 +58,16 @@ export function TodoFilter({
       {completedCount > 0 && (
         <button
           onClick={onClearCompleted}
-          className="px-4 py-2 rounded-lg text-sm text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-surface-hover)] transition-all duration-200"
+          style={{
+            padding: '8px 16px',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            color: '#ef4444',
+            cursor: 'pointer',
+            fontSize: '14px',
+            textAlign: 'left'
+          }}
         >
           清除已完成
         </button>

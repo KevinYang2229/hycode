@@ -13,18 +13,26 @@ function App() {
   const completedCount = todos.filter(t => t.completed).length;
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:py-12">
-      <div className="max-w-2xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+    <div style={{ minHeight: '100vh', padding: '32px 16px' }}>
+      <div style={{ maxWidth: '48rem', margin: '0 auto' }}>
+        <header style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{ 
+            fontSize: '36px',
+            fontWeight: 'bold',
+            background: 'linear-gradient(90deg, #818cf8, #c084fc, #ec4899)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '8px',
+            margin: '0 0 8px 0'
+          }}>
             Todo List
           </h1>
-          <p className="text-[var(--color-text-muted)]">
+          <p style={{ color: '#94a3b8', margin: 0 }}>
             管理你的待辦事項
           </p>
         </header>
 
-        <main className="space-y-6">
+        <main style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <TodoInput onAdd={addTodo} />
 
           {todos.length > 0 && (
@@ -47,8 +55,8 @@ function App() {
           />
         </main>
 
-        <footer className="mt-12 text-center text-sm text-[var(--color-text-muted)] opacity-50">
-          <p>雙擊項目可編輯</p>
+        <footer style={{ marginTop: '48px', textAlign: 'center', fontSize: '14px', color: '#94a3b8', opacity: 0.5 }}>
+          <p style={{ margin: 0 }}>簡潔現代的待辦事項管理應用</p>
         </footer>
       </div>
     </div>

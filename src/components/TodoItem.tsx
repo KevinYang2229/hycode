@@ -40,19 +40,35 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
   };
 
   return (
-    <div className={`group flex items-center gap-3 p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/50 transition-all duration-200 ${todo.completed ? 'opacity-60' : ''}`}>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+      padding: '16px',
+      borderRadius: '12px',
+      backgroundColor: '#1e293b',
+      border: '1px solid #334155',
+      opacity: todo.completed ? 0.6 : 1,
+      transition: 'all 0.2s'
+    }}>
       <button
         onClick={() => onToggle(todo.id)}
-        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
-          todo.completed
-            ? 'bg-[var(--color-success)] border-[var(--color-success)]'
-            : 'border-[var(--color-text-muted)] hover:border-[var(--color-primary)]'
-        }`}
+        style={{
+          width: '24px',
+          height: '24px',
+          borderRadius: '50%',
+          border: todo.completed ? 'none' : '2px solid #94a3b8',
+          backgroundColor: todo.completed ? '#22c55e' : 'transparent',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          flexShrink: 0,
+          transition: 'all 0.2s'
+        }}
       >
         {todo.completed && (
-          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-          </svg>
+          <span style={{ color: 'white', fontSize: '16px' }}>✓</span>
         )}
       </button>
 
@@ -64,35 +80,61 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
           onChange={(e) => setEditText(e.target.value)}
           onBlur={handleSubmit}
           onKeyDown={handleKeyDown}
-          className="flex-1 px-3 py-1 rounded-lg bg-[var(--color-bg)] border border-[var(--color-primary)] text-[var(--color-text)] focus:outline-none"
+          style={{
+            flex: 1,
+            padding: '8px 12px',
+            borderRadius: '8px',
+            backgroundColor: '#0f172a',
+            border: '1px solid #6366f1',
+            color: '#f1f5f9',
+            fontSize: '16px',
+            fontFamily: 'inherit'
+          }}
         />
       ) : (
         <span
           onDoubleClick={() => setIsEditing(true)}
-          className={`flex-1 cursor-pointer select-none ${todo.completed ? 'line-through text-[var(--color-text-muted)]' : ''}`}
+          style={{
+            flex: 1,
+            cursor: 'pointer',
+            textDecoration: todo.completed ? 'line-through' : 'none',
+            color: todo.completed ? '#94a3b8' : '#f1f5f9'
+          }}
         >
           {todo.text}
         </span>
       )}
 
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
         <button
           onClick={() => setIsEditing(true)}
-          className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary)] hover:bg-[var(--color-surface-hover)] transition-all duration-200"
+          style={{
+            padding: '8px',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            color: '#94a3b8',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
           title="編輯"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
+          ✏️
         </button>
         <button
           onClick={() => onDelete(todo.id)}
-          className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-surface-hover)] transition-all duration-200"
+          style={{
+            padding: '8px',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: 'transparent',
+            color: '#94a3b8',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
           title="刪除"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
+          🗑️
         </button>
       </div>
     </div>

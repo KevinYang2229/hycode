@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hycode - 測試</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-family: Inter, system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 56rem;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    h1 {
+      color: #6366f1;
+      margin-bottom: 20px;
+      font-size: 32px;
+    }
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #334155;
+      color: #f1f5f9;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    button.active {
+      background-color: #6366f1;
+    }
+    .content {
+      background-color: #1e293b;
+      padding: 30px;
+      border-radius: 12px;
+    }
+    .timer {
+      text-align: center;
+      font-size: 72px;
+      color: #6366f1;
+      font-weight: bold;
+      font-family: monospace;
+      margin: 40px 0;
+    }
+    .todo-list {
+      max-width: 600px;
+    }
+    .todo-item {
+      background-color: #334155;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hycode 測試頁面</h1>
+    
+    <div class="nav">
+      <button class="active" onclick="showTodo()">Todo</button>
+      <button onclick="showPomodoro()">Pomodoro</button>
+    </div>
+
+    <div class="content">
+      <div id="todo-section">
+        <h2>待辦事項</h2>
+        <div class="todo-list">
+          <div class="todo-item">
+            <input type="checkbox" checked>
+            <span>完成開發 Todo List</span>
+          </div>
+          <div class="todo-item">
+            <input type="checkbox">
+            <span>完成開發 Pomodoro Timer</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="pomodoro-section" style="display: none;">
+        <h2>番茄時鐘</h2>
+        <div style="text-align: center;">
+          <div class="timer" id="timer">25:00</div>
+          <button onclick="startTimer()" style="background-color: #6366f1; margin-right: 10px;">開始</button>
+          <button onclick="resetTimer()">重置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTodo() {
+      document.getElementById('todo-section').style.display = 'block';
+      document.getElementById('pomodoro-section').style.display = 'none';
+    }
+
+    function showPomodoro() {
+      document.getElementById('todo-section').style.display = 'none';
+      document.getElementById('pomodoro-section').style.display = 'block';
+    }
+
+    let timeLeft = 25 * 60;
+    let isRunning = false;
+    let intervalId = null;
+
+    function startTimer() {
+      isRunning = !isRunning;
+      if (isRunning) {
+        intervalId = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateDisplay();
+          }
+        }, 1000);
+      } else {
+        clearInterval(intervalId);
+      }
+    }
+
+    function resetTimer() {
+      isRunning = false;
+      clearInterval(intervalId);
+      timeLeft = 25 * 60;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const mins = Math.floor(timeLeft / 60);
+      const secs = timeLeft % 60;
+      document.getElementById('timer').textContent = 
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
+    updateDisplay();
+  </script>
+</body>
+</html>
