@@ -1,24 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --color-primary: #6366f1;
-  --color-bg: #0f172a;
-  --color-surface: #1e293b;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
-  --color-success: #22c55e;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  @apply bg-[var(--color-bg)] text-[var(--color-text)] font-sans;
-}
-
-#root {
-  min-height: 100vh;
-}

@@ -13,7 +13,7 @@ export default function App() {
   const [timeLeft, setTimeLeft] = useState(DURATIONS.work);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('pomodoro_stats');
