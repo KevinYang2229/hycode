@@ -14,12 +14,6 @@ const MODE_LABELS: Record<SessionType, string> = {
   longBreak: '長休息',
 };
 
-const MODE_COLORS: Record<SessionType, string> = {
-  work: 'from-red-500 to-red-600',
-  break: 'from-green-500 to-green-600',
-  longBreak: 'from-blue-500 to-blue-600',
-};
-
 export default function App() {
   const [mode, setMode] = useState<SessionType>('work');
   const [timeLeft, setTimeLeft] = useState(DURATIONS.work);
@@ -42,14 +36,12 @@ export default function App() {
     intervalRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          // 完成一個週期
           setSessionsCompleted(s => {
             const newCount = s + 1;
             localStorage.setItem('pomodoro_stats', JSON.stringify({ sessionsCompleted: newCount }));
             return newCount;
           });
 
-          // 自動切換模式
           if (mode === 'work') {
             const nextMode = sessionsCompleted % 4 === 3 ? 'longBreak' : 'break';
             setMode(nextMode);
@@ -71,6 +63,7 @@ export default function App() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const totalFocusTime = sessionsCompleted * 25;
+  const progress = ((DURATIONS[mode] - timeLeft) / DURATIONS[mode]) * 100;
 
   const handleModeSwitch = (newMode: SessionType) => {
     if (isRunning) return;
@@ -87,93 +80,183 @@ export default function App() {
     setIsRunning(!isRunning);
   };
 
+  const getModeColor = () => {
+    switch (mode) {
+      case 'work':
+        return 'from-blue-500 via-indigo-500 to-purple-500';
+      case 'break':
+        return 'from-emerald-500 via-teal-500 to-cyan-500';
+      case 'longBreak':
+        return 'from-amber-500 via-orange-500 to-red-500';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-3">
-            番茄時鐘
-          </h1>
-          <p className="text-[var(--color-text-muted)] text-lg">Pomodoro Timer</p>
-        </div>
-
-        {/* Mode Badge */}
-        <div className={`bg-gradient-to-r ${MODE_COLORS[mode]} rounded-full py-3 px-6 text-center font-semibold text-white shadow-lg`}>
-          {MODE_LABELS[mode]}
-        </div>
-
-        {/* Timer Display */}
-        <div className="text-center space-y-4">
-          <div className="text-8xl font-bold text-[var(--color-primary)] font-mono tracking-wider">
-            {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-          </div>
-          <p className="text-[var(--color-text-muted)] text-lg">
-            {isRunning ? '進行中...' : '已暫停'}
-          </p>
-        </div>
-
-        {/* Controls */}
-        <div className="space-y-4">
-          {/* Main Buttons */}
-          <div className="flex gap-3 justify-center">
-            <button
-              onClick={handleToggleTimer}
-              className="px-8 py-3 bg-[var(--color-primary)] text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors duration-200 active:scale-95"
-            >
-              {isRunning ? '暫停' : '開始'}
-            </button>
-            <button
-              onClick={handleReset}
-              className="px-8 py-3 bg-[var(--color-surface)] text-[var(--color-text)] font-semibold rounded-lg hover:bg-slate-700 transition-colors duration-200 active:scale-95"
-            >
-              重置
-            </button>
-          </div>
-
-          {/* Mode Switcher */}
-          <div className="flex gap-2 justify-center">
-            {(['work', 'break', 'longBreak'] as const).map(m => (
-              <button
-                key={m}
-                onClick={() => handleModeSwitch(m)}
-                disabled={isRunning}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 ${
-                  mode === m
-                    ? 'bg-[var(--color-primary)] text-white'
-                    : 'bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
-                }`}
-              >
-                {m === 'work' && '工作'}
-                {m === 'break' && '短休'}
-                {m === 'longBreak' && '長休'}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Statistics */}
-        <div className="bg-[var(--color-surface)] rounded-xl p-6 space-y-3 border border-slate-700">
-          <h3 className="text-lg font-semibold text-[var(--color-primary)] mb-4">統計</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-[var(--color-text-muted)] text-sm">已完成</p>
-              <p className="text-3xl font-bold text-[var(--color-primary)]">{sessionsCompleted}</p>
-            </div>
-            <div>
-              <p className="text-[var(--color-text-muted)] text-sm">總專注時間</p>
-              <p className="text-3xl font-bold text-[var(--color-success)]">
-                {Math.floor(totalFocusTime / 60)}h {totalFocusTime % 60}m
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <p className="text-center text-xs text-[var(--color-text-muted)] opacity-60">
-          每 4 個工作週期後自動切換長休息
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 text-white overflow-hidden">
+      {/* 背景動畫元素 */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
+
+      {/* 主容器 */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          {/* 標題 */}
+          <div className="text-center mb-12 space-y-3">
+            <h1 className="text-6xl md:text-7xl font-bold tracking-tighter">
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Pomodoro
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg font-light">專注與休息的完美平衡</p>
+          </div>
+
+          {/* 主卡片 - 玻璃態設計 */}
+          <div className="space-y-8">
+            {/* 計時器區域 */}
+            <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 border border-white/20 shadow-2xl">
+              {/* 模式徽章 */}
+              <div className={`inline-block w-full mb-6 bg-gradient-to-r ${getModeColor()} rounded-2xl py-3 px-6 text-center font-semibold text-white shadow-lg`}>
+                {MODE_LABELS[mode]}
+              </div>
+
+              {/* 圓形進度條 + 時間顯示 */}
+              <div className="relative flex items-center justify-center mb-8">
+                <svg className="w-64 h-64 transform -rotate-90" viewBox="0 0 200 200">
+                  {/* 背景圓 */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.1)"
+                    strokeWidth="8"
+                  />
+                  {/* 進度圓 */}
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="90"
+                    fill="none"
+                    stroke="url(#gradient)"
+                    strokeWidth="8"
+                    strokeDasharray={`${2 * Math.PI * 90}`}
+                    strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress / 100)}`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000"
+                  />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#60a5fa" />
+                      <stop offset="100%" stopColor="#a855f7" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+
+                {/* 中心時間 */}
+                <div className="absolute text-center">
+                  <div className="text-7xl font-bold font-mono text-white tracking-wider">
+                    {String(minutes).padStart(2, '0')}
+                  </div>
+                  <div className="text-5xl font-mono text-white/50">
+                    {String(seconds).padStart(2, '0')}
+                  </div>
+                  <p className="text-sm text-slate-400 mt-4 font-light">
+                    {isRunning ? '進行中' : '已暫停'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 控制按鈕 */}
+            <div className="space-y-4">
+              {/* 主按鈕 */}
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={handleToggleTimer}
+                  className="flex-1 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 active:scale-95 transform"
+                >
+                  {isRunning ? '⏸ 暫停' : '▶ 開始'}
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="px-8 py-4 backdrop-blur-xl bg-white/10 text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-300 active:scale-95"
+                >
+                  ↻ 重置
+                </button>
+              </div>
+
+              {/* 模式切換 */}
+              <div className="flex gap-3 justify-center">
+                {(['work', 'break', 'longBreak'] as const).map(m => (
+                  <button
+                    key={m}
+                    onClick={() => handleModeSwitch(m)}
+                    disabled={isRunning}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                      mode === m
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-purple-500/50'
+                        : 'backdrop-blur-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 disabled:opacity-50'
+                    }`}
+                  >
+                    {m === 'work' && '工作'}
+                    {m === 'break' && '短休'}
+                    {m === 'longBreak' && '長休'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 統計面板 */}
+            <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20">
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-widest mb-4">統計資料</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="backdrop-blur-lg bg-white/5 rounded-xl p-4 border border-white/10">
+                  <p className="text-slate-400 text-sm font-light">已完成</p>
+                  <p className="text-3xl font-bold text-blue-400 mt-1">{sessionsCompleted}</p>
+                </div>
+                <div className="backdrop-blur-lg bg-white/5 rounded-xl p-4 border border-white/10">
+                  <p className="text-slate-400 text-sm font-light">總專注時間</p>
+                  <p className="text-3xl font-bold text-purple-400 mt-1">
+                    {Math.floor(totalFocusTime / 60)}h {totalFocusTime % 60}m
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 頁腳 */}
+            <p className="text-center text-xs text-slate-500 font-light">
+              每 4 個工作週期後自動切換長休息
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* CSS 動畫 */}
+      <style>{`
+        @keyframes blob {
+          0%, 100% {
+            transform: translate(0, 0) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </div>
   );
 }
